@@ -3752,6 +3752,124 @@ CMenuManager::AdditionalOptionInput(bool &goBack)
 
 // Not original name
 void
+#ifdef MORE_LANGUAGES
+//Fixed for correct Russian exporting
+CMenuManager::ExportStats()
+{
+	char date[10];
+	CFileMgr::SetDirMyDocuments();
+	_strdate(date);
+	wchar *lastMission = TheText.Get(CStats::LastMissionPassedName[0] == '\0' ? "ITBEG" : CStats::LastMissionPassedName);
+	FILE *txtFile = fopen("stats.txt", "w");
+
+	if (txtFile) {
+		int statLines = CStats::ConstructStatLine(99999);
+		fprintf(txtFile, "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
+		fprintf(txtFile, "\t\t\tGTA VICE CITY %s\n", UnicodeToAsciiForExport(TheText.Get("FEH_STA")));
+		fprintf(txtFile, "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n\n\n");
+		fprintf(txtFile, "%s: ", UnicodeToAsciiForExport(TheText.Get("FES_CMI")));
+		fprintf(txtFile, "%s\n", UnicodeToAsciiForExport(lastMission));
+		fprintf(txtFile, "%s: ", UnicodeToAsciiForExport(TheText.Get("FES_DAT")));
+		fprintf(txtFile, "%s\n\n\n", date);
+		fprintf(txtFile, "%s  ", UnicodeToAsciiForExport(TheText.Get("CRIMRA")));
+		UnicodeStrcpy(gUString, CStats::FindCriminalRatingString());
+		fprintf(txtFile, "%s (%d)\n\n\n", UnicodeToAsciiForExport(gUString), CStats::FindCriminalRatingNumber());
+		for (int i = 0; i < statLines; ++i) {
+			CStats::ConstructStatLine(i);
+			char *statKey = UnicodeToAsciiForExport(gUString);
+			if (statKey[0] != '\0')
+				fprintf(txtFile, "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n%s\n", statKey);
+
+			char *statValue = UnicodeToAsciiForExport(gUString2);
+			for (int j = 0; statValue[j] != '\0'; ++j) {
+				if (statValue[j] == '_')
+					statValue[j] = '\xBA'; // This is degree symbol, but my editors keeps messing up with it so I wrote hex representation
+			}
+			if (statValue)
+				fprintf(txtFile, "%s\n\n", statValue);
+		}
+		fprintf(txtFile, "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n\n");
+	}
+	fclose(txtFile);
+	FILE *htmlFile = fopen("stats.html", "w");
+	if (htmlFile) {
+		int statLines = CStats::ConstructStatLine(99999);
+		fprintf(htmlFile, "<title>Grand Theft Auto Vice City Stats</title>\n");
+		fprintf(htmlFile, "<body bgcolor=\"#FF00CC\" leftmargin=\"10\" topmargin=\"10\" marginwidth=\"10\" marginheight=\"10\">\n");
+		fprintf(htmlFile, "<table width=\"560\" align=\"center\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\">\n");
+		fprintf(htmlFile, "<tr align=\"center\" valign=\"top\"> \n");
+		fprintf(htmlFile, "<td height=\"59\" colspan=\"2\" bgcolor=\"#FFCCFF\"><div align=\"center\"><font color=\"#FF00CC\" size=\"3\" "
+			"face=\"Arial, \n");
+		fprintf(htmlFile, "Helvetica, sans-serif\">-------------------------------------------------------------------------</font><font \n");
+		fprintf(htmlFile, "size=\"3\" face=\"Arial, Helvetica, sans-serif\"><br>\n");
+		fprintf(htmlFile, "<strong><font color=\"#000000\">GRAND THEFT AUTO VICE CITY ");
+		fprintf(htmlFile, "%s</font></strong><br><font\n", UnicodeToAsciiForExport(TheText.Get("FEH_STA")));
+		fprintf(htmlFile, "color=\"#FF00CC\">-------------------------------------------------------------------------</font></font></div></td> </tr>\n");
+		fprintf(htmlFile, "<tr align=\"left\" valign=\"top\" bgcolor=\"#FFFFFF\">     <td height=\"22\" colspan=\"2\">&nbsp;</td>  </tr>\n");
+		fprintf(htmlFile, "<tr align=\"left\" valign=\"top\" bgcolor=\"#FFFFFF\"> \n");
+		fprintf(htmlFile,
+			"<td height=\"40\" colspan=\"2\"> <p><font color=\"#00CC00\" size=\"2\" face=\"Arial, Helvetica, sans-serif\">"
+			"<strong><font color=\"#009900\" size=\"1\">%s: \n", UnicodeToAsciiForExport(TheText.Get("FES_DAT")));
+		fprintf(htmlFile, "%s</font><br>        %s: </strong>", date, UnicodeToAsciiForExport(TheText.Get("FES_CMI")));
+		fprintf(htmlFile, "%s<strong><br></strong> </font></p></td></tr>\n", UnicodeToAsciiForExport(lastMission));
+		fprintf(htmlFile, "<tr align=\"left\" valign=\"top\" bgcolor=\"#CCCCCC\"> <td height=\"5\" colspan=\"2\"></td> </tr> <tr align=\""
+			"left\" valign=\"top\" bgcolor=\"#FFFFFF\"> \n");
+		fprintf(htmlFile, "<td height=\"10\" colspan=\"2\"></td> </tr> <tr align=\"left\" valign=\"top\" bgcolor=\"#FFFFFF\"> \n");
+		fprintf(htmlFile, "<td height=\"20\" colspan=\"2\"><font color=\"#FF00CC\" size=\"2\" face=\"Arial, Helvetica, sans-serif\"><str"
+			"ong>%s</strong>\n", UnicodeToAsciiForExport(TheText.Get("CRIMRA")));
+
+		UnicodeStrcpy(gUString, CStats::FindCriminalRatingString());
+		char *statKey = UnicodeToAsciiForExport(gUString);
+		int rating = CStats::FindCriminalRatingNumber();
+		fprintf(htmlFile, "%s (%d)</font></td>  </tr>  <tr align=\"left\" valign=\"top\" bgcolor=\"#FFFFFF\"><td height=\"10\" colspan=\""
+			"2\"></td>  </tr>\n", statKey, rating);
+
+		for (int k = 0; k < statLines; ++k) {
+			CStats::ConstructStatLine(k);
+			statKey = UnicodeToAsciiForExport(gUString);
+			if (statKey[0] != '\0')
+				fprintf(htmlFile, "</font></strong></div></td> </tr> <tr align=\"left\" valign=\"top\" bgcolor=\"#FFFFFF\">  <td height=\"10"
+					"\" colspan=\"2\"></td> </tr>\n");
+
+			fprintf(htmlFile, "<tr align=\"left\" valign=\"top\"><td width=\"500\" height=\"22\" bgcolor=\"#FFCCFF\"><font color=\"#FF00CC"
+				"\" size=\"2\" face=\"Arial, Helvetica, sans-serif\"><strong>\n");
+
+			if (statKey[0] != '\0')
+				fprintf(htmlFile, "%s", statKey);
+			else
+				fprintf(htmlFile, " ");
+
+			fprintf(htmlFile, "</strong></font></td> <td width=\"500\" align=\"right\" valign=\"middle\" bgcolor=\"#FFCCFF\"> <div align=\""
+				"right\"><strong><font color=\"#FF00CC\">\n");
+
+			char *statValue = UnicodeToAsciiForExport(gUString2);
+			for (int l = 0; statValue[l] != '\0'; ++l) {
+				if (statValue[l] == '_')
+					statValue[l] = '\xBA'; // This is degree symbol, but my editors keeps messing up with it so I wrote hex representation
+			}
+			if (statValue)
+				fprintf(htmlFile, "%s", statValue);
+			else
+				fprintf(htmlFile, " ");
+		}
+		fprintf(htmlFile, "</font></strong></div></td> </tr> <tr align=\"left\" valign=\"top\" bgcolor=\"#FFFFFF\">  <td height=\"10\" c"
+			"olspan=\"2\"></td> </tr>\n");
+		fprintf(htmlFile, "</table><br><table width=\"560\" border=\"0\"  align=\"center\" cellspacing=\"0\" cellpadding=\"5\"><tr align"
+			"=\"center\" valign=\"middle\" bgcolor=\"#FFCCFF\">");
+		fprintf(htmlFile, "<td><font color=\"#000000\" size=\"2\" face=\"Arial, Helvetica, sans-serif\"><a href=\"http://www.rockstargam"
+			"es.com/vicecity\">rockstargames.com/vicecity</a></font></td>\n");
+		fprintf(htmlFile, "<td><font color=\"#000000\" size=\"2\" face=\"Arial, Helvetica, sans-serif\"><a href=\"http://www.rockstargam"
+			"es.com\">rockstargames.com</a></font></td>\n");
+		fprintf(htmlFile, "<td><font color=\"#000000\" size=\"2\" face=\"Arial, Helvetica, sans-serif\">&nbsp;<a href=\"http://www.rocks"
+			"tarnorth.com\">rockstarnorth.com</a></font></td></tr>\n");
+		fprintf(htmlFile, "</table>\n</body>\n");
+	}
+	fclose(htmlFile);
+	CFileMgr::SetDir("");
+}
+
+#else
+//ORIGINAL CODE
 CMenuManager::ExportStats()
 {
 	char date[10];
@@ -3865,6 +3983,7 @@ CMenuManager::ExportStats()
 	fclose(htmlFile);
 	CFileMgr::SetDir("");
 }
+#endif
 
 // Original name is unknown
 void
@@ -6350,6 +6469,9 @@ CMenuManager::PrintController(void)
 				break;
 		case LANGUAGE_FRENCH:
 		case LANGUAGE_GERMAN:
+		#ifdef MORE_LANGUAGES
+		case LANGUAGE_RUSSIAN:
+		#endif
 			CFont::SetScale(MENU_X(SMALLESTTEXT_X_SCALE * 2 * scale * 0.65f), MENU_Y(SMALLESTTEXT_Y_SCALE * scale * 0.65f));
 			break;
 		default:

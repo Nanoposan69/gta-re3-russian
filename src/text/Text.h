@@ -1,6 +1,9 @@
 #pragma once
 
 char *UnicodeToAscii(wchar *src);
+#ifdef MORE_LANGUAGES
+char *UnicodeToAsciiForExport(wchar *src);
+#endif
 char *UnicodeToAsciiForSaveLoad(wchar *src);
 char *UnicodeToAsciiForMemoryCard(wchar *src);
 void TextCopy(wchar *dst, const wchar *src);

@@ -123,7 +123,7 @@ enum
 class CFont
 {
 #ifdef MORE_LANGUAGES
-	static int16 Size[LANGSET_MAX][MAX_FONTS][210];
+	static int16 Size[LANGSET_MAX][MAX_FONTS][242];
 	static uint8 LanguageSet;
 	static int32 Slot;
 #else
@@ -213,5 +213,8 @@ public:
 	static bool IsJapanesePunctuation(wchar* str);
 	static bool IsJapanese() { return LanguageSet == FONT_LANGSET_JAPANESE; }
 	static bool IsJapaneseFont() { return IsJapanese() && (Details.style == FONT_JAPANESE);  }
+	// Russian font
+	static bool IsRussian() { return LanguageSet == FONT_LANGSET_RUSSIAN; }
+	static wchar FindNewRussianCharacter(wchar c);
 #endif
 };

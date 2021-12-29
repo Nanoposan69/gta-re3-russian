@@ -494,6 +494,45 @@ UnicodeToAscii(wchar *src)
 	aStr[len] = '\0';
 	return aStr;
 }
+#ifdef MORE_LANGUAGES
+char*
+UnicodeToAsciiForExport(wchar *src)
+{
+	static char aStr[256];
+	int len;
+	for(len = 0; *src != '\0' && len < 256-1; len++, src++)
+		if(*src < 128)
+			aStr[len] = *src;
+		
+		else if(CGame::russianGame && *src < 192)
+			aStr[len] = *src + 64;
+		// convert to CP1252
+		else if(*src <= 131)
+			aStr[len] = *src + 64;
+		else if (*src <= 141)
+			aStr[len] = *src + 66;
+		else if (*src <= 145)
+			aStr[len] = *src + 68;
+		else if (*src <= 149)
+			aStr[len] = *src + 71;
+		else if (*src <= 154)
+			aStr[len] = *src + 73;
+		else if (*src <= 164)
+			aStr[len] = *src + 75;
+		else if (*src <= 168)
+			aStr[len] = *src + 77;
+		else if (*src <= 204)
+			aStr[len] = *src + 80;
+		else switch (*src) {
+		case 205: aStr[len] = 209; break;
+		case 206: aStr[len] = 241; break;
+		case 207: aStr[len] = 191; break;
+		default: aStr[len] = '#'; break;
+		}
+	aStr[len] = '\0';
+	return aStr;
+}
+#endif
 
 char*
 UnicodeToAsciiForSaveLoad(wchar *src)
