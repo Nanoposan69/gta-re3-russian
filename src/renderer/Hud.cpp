@@ -750,7 +750,11 @@ void CHud::Draw()
 					CFont::SetPropOn();
 					CFont::SetBackgroundOff();
 
+					#ifdef MORE_LANGUAGES
+					if (FrontEndMenuManager.m_PrefsLanguage == CMenuManager::LANGUAGE_SPANISH || FrontEndMenuManager.m_PrefsLanguage == CMenuManager::LANGUAGE_RUSSIAN)
+					#else
 					if (FrontEndMenuManager.m_PrefsLanguage == CMenuManager::LANGUAGE_SPANISH)
+					#endif
 						CFont::SetScale(SCREEN_SCALE_X(1.2f * 0.8f), SCREEN_SCALE_Y(1.2f));
 					else
 						CFont::SetScale(SCREEN_SCALE_X(1.2f), SCREEN_SCALE_Y(1.2f));
@@ -844,7 +848,11 @@ void CHud::Draw()
 					CFont::SetPropOn();
 					CFont::SetBackgroundOff();
 
+					#ifdef MORE_LANGUAGES
+					if (FrontEndMenuManager.m_PrefsLanguage != CMenuManager::LANGUAGE_ITALIAN && FrontEndMenuManager.m_PrefsLanguage != CMenuManager::LANGUAGE_SPANISH && FrontEndMenuManager.m_PrefsLanguage != CMenuManager::LANGUAGE_RUSSIAN)
+					#else
 					if (FrontEndMenuManager.m_PrefsLanguage != CMenuManager::LANGUAGE_ITALIAN && FrontEndMenuManager.m_PrefsLanguage != CMenuManager::LANGUAGE_SPANISH)
+					#endif
 						CFont::SetScale(SCREEN_SCALE_X(1.2f), SCREEN_SCALE_Y(1.2f));
 					else
 						CFont::SetScale(SCREEN_SCALE_X(1.2f * 0.85f), SCREEN_SCALE_Y(1.2f));

@@ -142,6 +142,10 @@ CText::GetUpperCase(wchar c)
 	case 'e':
 		if (c >= 'a' && c <= 'z')
 			return c - 32;
+#ifdef MORE_LANGUAGES
+		if (c >= 160 && c <= 191)
+			return c - 32;
+#endif
 		break;
 	case 'f':
 		if (c >= 'a' && c <= 'z')
