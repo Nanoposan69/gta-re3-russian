@@ -130,7 +130,7 @@ int16 CFont::Size[MAX_FONTS][210] = {
 	},
 	{
         {
-					//FONT2 RUSSIAN
+		//FONT2 RUSSIAN
 		12,  9,  8, 17, 19, 19, 25,  4, 33, 33, 25, 35, 11, 10,  6, 33,
 		18, 10, 17, 17, 17, 17, 17, 15, 12, 16,  5, 30, 30, 30, 30, 30,
 		12, 16, 19, 16, 19, 18, 18, 17, 22, 11, 17, 18, 18, 30, 22, 19,
@@ -149,7 +149,7 @@ int16 CFont::Size[MAX_FONTS][210] = {
 		19, 16
 		},
         {
-					//FONT1 RUSSIAN
+		//FONT1 RUSSIAN
 		15,  7, 11, 25, 20, 23, 21,  7, 11, 10, 26, 14,  6, 14,  6, 26,
 		20,  7, 20, 20, 21, 20, 20, 19, 21, 20,  8, 30, 24, 30, 24, 19,
 		20, 22, 22, 21, 22, 18, 18, 22, 22,  9, 14, 21, 18, 27, 21, 24,
@@ -1292,7 +1292,10 @@ CFont::GetCharacterWidth(wchar c)
 			return Size[0][RenderState.style][c];
 		}
 	}
-
+	else if(!RenderState.proportional &&
+			LanguageSet == FONT_LANGSET_RUSSIAN) {
+		return Size[LanguageSet][RenderState.style][241];
+	}
 	else if (RenderState.proportional)
 		return Size[LanguageSet][RenderState.style][c];
 	else
@@ -1345,6 +1348,12 @@ CFont::GetCharacterSize(wchar c)
 			c = FindNewCharacter(c);
 		if (Details.proportional)
 			return Size[LanguageSet][Details.style][c] * Details.scaleX;
+#ifdef MORE_LANGUAGES
+		else if (LanguageSet == FONT_LANGSET_RUSSIAN &&
+				Details.style == FONT_STANDARD) {
+			return Size[LanguageSet][Details.style][241] * Details.scaleX;
+		}
+#endif
 		else
 			return Size[LanguageSet][Details.style][209] * Details.scaleX;
 	}
